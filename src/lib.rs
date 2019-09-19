@@ -13,3 +13,7 @@ mod routes;
 mod schema;
 
 type Pool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
+
+pub struct Blog {
+    port: u16,
+}
