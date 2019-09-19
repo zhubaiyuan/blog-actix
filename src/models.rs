@@ -53,6 +53,20 @@ pub fn create_post(conn: &SqliteConnection, user: &User, title: &str, body: &str
     })
 }
 
+pub fn publish_post(conn: &SqliteConnection, post_id: i32) -> Result<Post> {
+    conn.transaction(|| {
+        diesel::update(posts::table.filter(posts::id.eq(post_id)))
+            .set(posts::published.eq(true))
+            .execute(conn)?;
+
+        posts::table
+            .find(post_id)
+            .select(posts::all_columns)
+            .first(conn)
+            .map_err(Into::into)
+    })
+}
+
 pub enum UserKey<'a> {
     Username(&'a str),
     ID(i32),
