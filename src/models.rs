@@ -86,3 +86,13 @@ pub fn find_user<'a>(conn: &SqliteConnection, key: UserKey<'a>) -> Result<User> 
             .map_err(Into::into),
     }
 }
+
+pub fn all_posts(conn: &SqliteConnection) -> Result<Vec<(Post, User)>> {
+    posts::table
+        .order(posts::id.desc())
+        .filter(posts::published.eq(true))
+        .inner_join(users::table)
+        .select((posts::all_columns, (users::id, users::username)))
+        .load::<(Post, User)>(conn)
+        .map_err(Into::into)
+}
