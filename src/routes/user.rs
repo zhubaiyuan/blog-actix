@@ -20,3 +20,16 @@ fn create_user(
     })
     .then(convert)
 }
+
+fn find_user(
+    name: web::Path<String>,
+    pool: web::Data<Pool>,
+) -> impl Future<Item = HttpResponse, Error = AppError> {
+    web::block(move || {
+        let conn: &SqliteConnection = &pool.get().unwrap();
+        let name = name.into_inner();
+        let key = models::UserKey::Username(name.as_str());
+        models::find_user(conn, key)
+    })
+    .then(convert)
+}
