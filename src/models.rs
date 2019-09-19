@@ -1,4 +1,5 @@
 use crate::errors::AppError;
+use crate::schema::posts;
 use crate::schema::users;
 use diesel::prelude::*;
 
@@ -8,6 +9,16 @@ type Result<T> = std::result::Result<T, AppError>;
 pub struct User {
     pub id: i32,
     pub username: String,
+}
+
+#[derive(Queryable, Associations, Identifiable, Serialize, Debug)]
+#[belongs_to(User)]
+pub struct Post {
+    pub id: i32,
+    pub user_id: i32,
+    pub title: String,
+    pub body: String,
+    pub published: bool,
 }
 
 pub fn create_user(conn: &SqliteConnection, username: &str) -> Result<User> {
