@@ -41,3 +41,8 @@ impl From<BlockingError<AppError>> for AppError {
         }
     }
 }
+
+#[derive(Debug, Serialize)]
+struct ErrorResponse {
+    err: String,
+}
