@@ -11,3 +11,14 @@ pub enum AppError {
     DatabaseError(diesel::result::Error),
     OperationCanceled,
 }
+
+impl fmt::Display for AppError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            AppError::RecordAlreadyExists => write!(f, "This record violates a unique constraint"),
+            AppError::RecordNotFound => write!(f, "This record does not exist"),
+            AppError::DatabaseError(e) => write!(f, "Database error: {:?}", e),
+            AppError::OperationCanceled => write!(f, "The running operation was canceled"),
+        }
+    }
+}
