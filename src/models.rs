@@ -35,6 +35,24 @@ pub fn create_user(conn: &SqliteConnection, username: &str) -> Result<User> {
     })
 }
 
+pub fn create_post(conn: &SqliteConnection, user: &User, title: &str, body: &str) -> Result<Post> {
+    conn.transaction(|| {
+        diesel::insert_into(posts::table)
+            .values((
+                posts::user_id.eq(user.id),
+                posts::title.eq(title),
+                posts::body.eq(body),
+            ))
+            .execute(conn)?;
+
+        posts::table
+            .order(posts::id.desc())
+            .select(posts::all_columns)
+            .first(conn)
+            .map_err(Into::into)
+    })
+}
+
 pub enum UserKey<'a> {
     Username(&'a str),
     ID(i32),
