@@ -32,3 +32,12 @@ impl From<diesel::result::Error> for AppError {
         }
     }
 }
+
+impl From<BlockingError<AppError>> for AppError {
+    fn from(e: BlockingError<AppError>) -> Self {
+        match e {
+            BlockingError::Error(inner) => inner,
+            BlockingError::Canceled => AppError::OperationCanceled,
+        }
+    }
+}
