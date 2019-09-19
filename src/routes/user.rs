@@ -4,6 +4,12 @@ use crate::{models, Pool};
 use actix_web::{web, HttpResponse};
 use futures::Future;
 
+pub fn configure(cfg: &mut web::ServiceConfig) {
+    cfg.service(web::resource("/users").route(web::post().to_async(create_user)))
+        .service(web::resource("/users/find/{name}").route(web::get().to_async(find_user)))
+        .service(web::resource("/users/{id}").route(web::get().to_async(get_user)));
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 struct UserInput {
     username: String,
