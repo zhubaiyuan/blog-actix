@@ -23,3 +23,8 @@ pub fn create_user(conn: &SqliteConnection, username: &str) -> Result<User> {
             .map_err(Into::into)
     })
 }
+
+pub enum UserKey<'a> {
+    Username(&'a str),
+    ID(i32),
+}
