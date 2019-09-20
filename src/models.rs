@@ -96,3 +96,22 @@ pub fn all_posts(conn: &SqliteConnection) -> Result<Vec<(Post, User)>> {
         .load::<(Post, User)>(conn)
         .map_err(Into::into)
 }
+
+pub fn user_posts(
+    conn: &SqliteConnection,
+    user_id: i32,
+) -> Result<Vec<(Post, Vec<(Comment, User)>)>> {
+    let posts = posts::table
+        .filter(posts::user_id.eq(user_id))
+        .order(posts::id.desc())
+        .select(posts::all_columns)
+        .load::<Post>(conn)?;
+
+    let comments = Comment::belonging_to(&posts)
+        .inner_join(users::table)
+        .select((comments::all_columns, (users::id, users::username)))
+        .load::<(Comment, User)>(conn)?
+        .grouped_by(&posts);
+
+    Ok(posts.into_iter().zip(comments).collect())
+}
