@@ -25,3 +25,14 @@ fn add_comment(
     })
     .then(convert)
 }
+
+fn post_comments(
+    post_id: web::Path<i32>,
+    pool: web::Data<Pool>,
+) -> impl Future<Item = HttpResponse, Error = AppError> {
+    web::block(move || {
+        let conn: &SqliteConnection = &pool.get().unwrap();
+        models::post_comments(conn, post_id.into_inner())
+    })
+    .then(convert)
+}
