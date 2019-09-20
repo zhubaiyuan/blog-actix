@@ -28,3 +28,14 @@ fn add_post(
     })
     .then(convert)
 }
+
+fn publish_post(
+    post_id: web::Path<i32>,
+    pool: web::Data<Pool>,
+) -> impl Future<Item = HttpResponse, Error = AppError> {
+    web::block(move || {
+        let conn: &SqliteConnection = &pool.get().unwrap();
+        models::publish_post(conn, post_id.into_inner())
+    })
+    .then(convert)
+}
