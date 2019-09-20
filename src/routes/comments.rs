@@ -5,6 +5,15 @@ use actix_web::{web, HttpResponse};
 use diesel::prelude::*;
 use futures::Future;
 
+pub fn configure(cfg: &mut web::ServiceConfig) {
+    cfg.service(web::resource("/users/{id}/comments").route(web::get().to_async(user_comments)))
+        .service(
+            web::resource("/posts/{id}/comments")
+                .route(web::post().to_async(add_comment))
+                .route(web::get().to_async(post_comments)),
+        );
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 struct CommentInput {
     user_id: i32,
