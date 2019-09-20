@@ -1,4 +1,5 @@
 use crate::errors::AppError;
+use crate::schema::comments;
 use crate::schema::posts;
 use crate::schema::users;
 use diesel::prelude::*;
