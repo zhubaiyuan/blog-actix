@@ -78,6 +78,29 @@ pub fn publish_post(conn: &SqliteConnection, post_id: i32) -> Result<Post> {
     })
 }
 
+pub fn create_comment(
+    conn: &SqliteConnection,
+    user_id: i32,
+    post_id: i32,
+    body: &str,
+) -> Result<Comment> {
+    conn.transaction(|| {
+        diesel::insert_into(comments::table)
+            .values((
+                comments::user_id.eq(user_id),
+                comments::post_id.eq(post_id),
+                comments::body.eq(body),
+            ))
+            .execute(conn)?;
+
+        comments::table
+            .order(comments::id.desc())
+            .select(comments::all_columns)
+            .first(conn)
+            .map_err(Into::into)
+    })
+}
+
 pub enum UserKey<'a> {
     Username(&'a str),
     ID(i32),
