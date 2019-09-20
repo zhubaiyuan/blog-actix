@@ -158,3 +158,10 @@ pub fn post_comments(conn: &SqliteConnection, post_id: i32) -> Result<Vec<(Comme
         .load::<(Comment, User)>(conn)
         .map_err(Into::into)
 }
+
+#[derive(Queryable, Serialize, Debug)]
+pub struct PostWithComment {
+    pub id: i32,
+    pub title: String,
+    pub published: bool,
+}
