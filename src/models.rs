@@ -165,3 +165,18 @@ pub struct PostWithComment {
     pub title: String,
     pub published: bool,
 }
+
+pub fn user_comments(
+    conn: &SqliteConnection,
+    user_id: i32,
+) -> Result<Vec<(Comment, PostWithComment)>> {
+    comments::table
+        .filter(comments::user_id.eq(user_id))
+        .inner_join(posts::table)
+        .select((
+            comments::all_columns,
+            (posts::id, posts::title, posts::published),
+        ))
+        .load::<(Comment, PostWithComment)>(conn)
+        .map_err(Into::into)
+}
