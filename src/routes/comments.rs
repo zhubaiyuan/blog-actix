@@ -10,3 +10,18 @@ struct CommentInput {
     user_id: i32,
     body: String,
 }
+
+fn add_comment(
+    post_id: web::Path<i32>,
+    comment: web::Json<CommentInput>,
+    pool: web::Data<Pool>,
+) -> impl Future<Item = HttpResponse, Error = AppError> {
+    web::block(move || {
+        let conn: &SqliteConnection = &pool.get().unwrap();
+        let data = comment.into_inner();
+        let user_id = data.user_id;
+        let body = data.body;
+        models::create_comment(conn, user_id, post_id.into_inner(), body.as_str())
+    })
+    .then(convert)
+}
