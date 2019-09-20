@@ -50,3 +50,11 @@ fn user_posts(
     })
     .then(convert)
 }
+
+fn all_posts(pool: web::Data<Pool>) -> impl Future<Item = HttpResponse, Error = AppError> {
+    web::block(move || {
+        let conn: &SqliteConnection = &pool.get().unwrap();
+        models::all_posts(conn)
+    })
+    .then(convert)
+}
