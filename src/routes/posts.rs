@@ -5,6 +5,16 @@ use actix_web::{web, HttpResponse};
 use diesel::prelude::*;
 use futures::Future;
 
+pub fn configure(cfg: &mut web::ServiceConfig) {
+    cfg.service(
+        web::resource("/users/{id}/posts")
+            .route(web::post().to_async(add_post))
+            .route(web::get().to_async(user_posts)),
+    )
+    .service(web::resource("/posts").route(web::get().to_async(all_posts)))
+    .service(web::resource("/posts/{id}/publish").route(web::post().to_async(publish_post)));
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 struct PostInput {
     title: String,
