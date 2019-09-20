@@ -39,3 +39,14 @@ fn publish_post(
     })
     .then(convert)
 }
+
+fn user_posts(
+    user_id: web::Path<i32>,
+    pool: web::Data<Pool>,
+) -> impl Future<Item = HttpResponse, Error = AppError> {
+    web::block(move || {
+        let conn: &SqliteConnection = &pool.get().unwrap();
+        models::user_posts(conn, user_id.into_inner())
+    })
+    .then(convert)
+}
